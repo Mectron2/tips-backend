@@ -4,16 +4,34 @@ import { UpdateParticipantDto } from './dto/update-participant.dto';
 import { ParticipantRepository } from './participant.repository';
 import { InvalidParticipantCreateDataException } from './exceptions/InvalidParticipantCreateDataException';
 import { ResponseParticipantDto } from './dto/response-participant.dto';
+import { BillsService } from '../bills/bills.service';
 
 @Injectable()
 export class ParticipantService {
-  constructor(private readonly participantRepository: ParticipantRepository) {}
+  constructor(
+    private readonly participantRepository: ParticipantRepository,
+    private readonly billsService: BillsService,
+  ) {}
 
-  create(createParticipantDto: CreateParticipantDto) {
+  async create(createParticipantDto: CreateParticipantDto) {
     const data = {
       ...createParticipantDto,
       name: createParticipantDto.name ?? 'Unknown participant',
     };
+
+    const remainingAmountOfTips =
+      await this.billsService.getRemainingAmountOfTips(data.billId);
+    const remainingPercentOfTips =
+      await this.billsService.getRemainingPercentOfTips(data.billId);
+
+    if (
+      (data.customAmount && data.customAmount > remainingAmountOfTips) ||
+      (data.customPercent && data.customPercent > remainingPercentOfTips)
+    ) {
+      throw new InvalidParticipantCreateDataException(
+        'customAmount or customPercent exceeds the remaining amount or percent of tips for the bill.',
+      );
+    }
 
     if (data.customAmount && data.customPercent) {
       throw new InvalidParticipantCreateDataException(

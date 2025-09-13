@@ -154,6 +154,28 @@ export class BillsService {
     return [...customPercentsOrAmountsDtos, ...remainingDtos];
   }
 
+  async getRemainingAmountOfTips(billId: number) {
+    const bill = await this.billsRepository.findOne(billId);
+    const tipsLimit = Number(bill.amount) * Number(bill.tipPercent);
+    const paidTips = bill.participants
+      ? bill.participants.reduce((sum, p) => {
+          return sum + (p.customAmount ? Number(p.customAmount) : 0);
+        }, 0)
+      : 0;
+    return tipsLimit - paidTips;
+  }
+
+  async getRemainingPercentOfTips(billId: number) {
+    const tipsLimit = 1;
+    const bill = await this.billsRepository.findOne(billId);
+    const paidTips = bill.participants
+      ? bill.participants.reduce((sum, p) => {
+          return sum + (p.customPercent ? Number(p.customPercent) : 0);
+        }, 0)
+      : 0;
+    return tipsLimit - paidTips;
+  }
+
   update(id: number, updateBillDto: UpdateBillDto) {
     console.log(updateBillDto);
     return `This action updates a #${id} bill`;
