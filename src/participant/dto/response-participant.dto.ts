@@ -4,30 +4,34 @@ export class ResponseParticipantDto {
   id: number;
   billId: number;
   name: string;
-  customPercent?: number;
-  customAmount?: number;
+  declaredPercent?: number;
+  declaredAmount?: number;
   totalAmount?: number;
-  totalPercent?: number;
+  effectivePercent?: number;
 
   constructor(
     id: number,
     billId: number,
     name: string,
-    customPercent?: number,
-    customAmount?: number,
+    declaredPercent?: number,
+    declaredAmount?: number,
     totalAmount?: number,
-    totalPercent?: number,
+    effectivePercent?: number,
   ) {
     this.id = id;
     this.billId = billId;
     this.name = name;
-    this.customPercent = customPercent;
-    this.customAmount = customAmount;
+    this.declaredPercent = declaredPercent;
+    this.declaredAmount = declaredAmount;
     this.totalAmount = totalAmount;
-    this.totalPercent = totalPercent;
+    this.effectivePercent = effectivePercent;
   }
 
-  static toDto(data: Participant, totalAmount?: number, totalPercent?: number) {
+  static toDto(
+    data: Participant,
+    totalAmount?: number,
+    effectivePercent?: number,
+  ) {
     return new ResponseParticipantDto(
       data.id,
       data.billId,
@@ -35,7 +39,7 @@ export class ResponseParticipantDto {
       data.customPercent ? Number(data.customPercent) : undefined,
       data.customAmount ? Number(data.customAmount) : undefined,
       totalAmount ? totalAmount : undefined,
-      totalPercent ? totalPercent : undefined,
+      effectivePercent ? effectivePercent : undefined,
     );
   }
 }

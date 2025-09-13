@@ -51,15 +51,16 @@ export class BillsService {
     participants: Participant[],
     totalTipsAmount: number,
   ): ResponseParticipantDto[] {
-    const { withCustomPercent, withoutCustomPercent } =
+    const { withCustomPercent, withCustomAmount, withoutCustomPercent } =
       this.partitionParticipants(participants);
 
-    if (withCustomPercent.length === 0) {
+    if (withCustomPercent.length === 0 && withCustomAmount.length === 0) {
       return this.distributeEqualShares(participants, totalTipsAmount);
     }
 
     return this.distributeCustomShares(
       withCustomPercent,
+      withCustomAmount,
       withoutCustomPercent,
       totalTipsAmount,
     );
@@ -70,6 +71,8 @@ export class BillsService {
       (acc, participant) => {
         if (participant.customPercent) {
           acc.withCustomPercent.push(participant);
+        } else if (participant.customAmount) {
+          acc.withCustomAmount.push(participant);
         } else {
           acc.withoutCustomPercent.push(participant);
         }
@@ -77,6 +80,7 @@ export class BillsService {
       },
       {
         withCustomPercent: [] as Participant[],
+        withCustomAmount: [] as Participant[],
         withoutCustomPercent: [] as Participant[],
       },
     );
@@ -96,6 +100,7 @@ export class BillsService {
 
   private distributeCustomShares(
     withCustomPercent: Participant[],
+    withCustomAmount: Participant[],
     withoutCustomPercent: Participant[],
     totalTipsAmount: number,
   ): ResponseParticipantDto[] {
@@ -104,17 +109,35 @@ export class BillsService {
       0,
     );
 
+    const totalCustomAmount = withCustomAmount.reduce(
+      (sum, p) => sum + Number(p.customAmount || 0),
+      0,
+    );
+
+    const remainingTipsAmount = totalTipsAmount - totalCustomAmount;
+    const customPercentsOrAmountsDtos: ResponseParticipantDto[] = [];
+
     const customPercentDtos = withCustomPercent.map((participant) => {
       const customPercent = Number(participant.customPercent);
       return ResponseParticipantDto.toDto(
         participant,
-        totalTipsAmount * customPercent,
-        customPercent,
+        remainingTipsAmount * customPercent,
+        (remainingTipsAmount * customPercent) / totalTipsAmount,
       );
     });
 
+    const customAmountDtos = withCustomAmount.map((participant) =>
+      ResponseParticipantDto.toDto(
+        participant,
+        Number(participant.customAmount),
+        Number(participant.customAmount) / totalTipsAmount,
+      ),
+    );
+
+    customPercentsOrAmountsDtos.push(...customPercentDtos, ...customAmountDtos);
+
     if (withoutCustomPercent.length === 0) {
-      return customPercentDtos;
+      return customPercentsOrAmountsDtos;
     }
 
     const remainingPercent = 1 - totalCustomPercent;
@@ -123,12 +146,12 @@ export class BillsService {
     const remainingDtos = withoutCustomPercent.map((participant) =>
       ResponseParticipantDto.toDto(
         participant,
-        totalTipsAmount * perPersonPercent,
-        perPersonPercent,
+        remainingTipsAmount * perPersonPercent,
+        (remainingTipsAmount * perPersonPercent) / totalTipsAmount,
       ),
     );
 
-    return [...customPercentDtos, ...remainingDtos];
+    return [...customPercentsOrAmountsDtos, ...remainingDtos];
   }
 
   update(id: number, updateBillDto: UpdateBillDto) {
