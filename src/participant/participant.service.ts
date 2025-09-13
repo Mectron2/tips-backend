@@ -34,6 +34,7 @@ export class ParticipantService {
   }
 
   update(id: number, updateParticipantDto: UpdateParticipantDto) {
+    console.log(updateParticipantDto);
     return `This action updates a #${id} participant`;
   }
 

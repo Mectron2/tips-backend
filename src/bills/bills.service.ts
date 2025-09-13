@@ -132,6 +132,7 @@ export class BillsService {
   }
 
   update(id: number, updateBillDto: UpdateBillDto) {
+    console.log(updateBillDto);
     return `This action updates a #${id} bill`;
   }
 
