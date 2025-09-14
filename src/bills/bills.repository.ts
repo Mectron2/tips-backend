@@ -28,4 +28,8 @@ export class BillsRepository {
 
     return bill;
   }
+
+  delete(id: number) {
+    return this.prisma.bill.delete({ where: { id } });
+  }
 }

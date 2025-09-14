@@ -10,9 +10,4 @@ export class CreateBillDto {
   @IsNumber()
   @IsOptional()
   tipPercent: number;
-
-  @ApiProperty({ description: 'Custom tip amount', example: null })
-  @IsNumber()
-  @IsOptional()
-  tipAmount: number;
 }

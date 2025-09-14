@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateBillDto } from './dto/create-bill.dto';
-import { UpdateBillDto } from './dto/update-bill.dto';
 import { BillsRepository } from './bills.repository';
 import { Bill } from './entities/bill.entity';
-import { InvalidBillCreateDataException } from './exceptions/InvalidBillCreateDataException';
 import { ResponseParticipantDto } from '../participant/dto/response-participant.dto';
 import { Participant } from '../participant/entities/participant.entity';
 import { ResponseBillDto } from './dto/response-bill.dto';
@@ -13,15 +11,6 @@ export class BillsService {
   constructor(private readonly billsRepository: BillsRepository) {}
 
   create(createBillDto: CreateBillDto): Promise<Bill> {
-    if (
-      (createBillDto.tipAmount && createBillDto.tipPercent) ||
-      (!createBillDto.tipAmount && !createBillDto.tipPercent)
-    ) {
-      throw new InvalidBillCreateDataException(
-        'Provide either tipAmount or tipPercent, not both.',
-      );
-    }
-
     return this.billsRepository.create(createBillDto);
   }
 
@@ -177,12 +166,7 @@ export class BillsService {
     return tipsLimit - paidTips;
   }
 
-  update(id: number, updateBillDto: UpdateBillDto) {
-    console.log(updateBillDto);
-    return `This action updates a #${id} bill`;
-  }
-
   remove(id: number) {
-    return `This action removes a #${id} bill`;
+    return this.billsRepository.delete(id);
   }
 }

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreateParticipantDto } from './dto/create-participant.dto';
-import { UpdateParticipantDto } from './dto/update-participant.dto';
 import { ParticipantRepository } from './participant.repository';
 import { InvalidParticipantCreateDataException } from './exceptions/InvalidParticipantCreateDataException';
 import { ResponseParticipantDto } from './dto/response-participant.dto';
@@ -73,18 +72,9 @@ export class ParticipantService {
     return participants;
   }
 
-  findAll() {
-    return `This action returns all participant`;
-  }
-
   async findOne(id: number): Promise<ResponseParticipantDto> {
     const data = await this.participantRepository.findOne(id);
     return ResponseParticipantDto.toDto(data);
-  }
-
-  update(id: number, updateParticipantDto: UpdateParticipantDto) {
-    console.log(updateParticipantDto);
-    return `This action updates a #${id} participant`;
   }
 
   remove(id: number) {

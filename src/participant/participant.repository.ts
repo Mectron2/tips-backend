@@ -12,10 +12,6 @@ export class ParticipantRepository {
     return this.prisma.participant.create({ data });
   }
 
-  findAll() {
-    return this.prisma.participant.findMany();
-  }
-
   findOne(id: number) {
     return this.prisma.participant.findUniqueOrThrow({ where: { id } });
   }
