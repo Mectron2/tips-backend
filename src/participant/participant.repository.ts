@@ -18,4 +18,8 @@ export class ParticipantRepository {
   findOne(id: number) {
     return this.prisma.participant.findUniqueOrThrow({ where: { id } });
   }
+
+  deleteAllParticipantsByBillId(id: number) {
+    return this.prisma.participant.deleteMany({ where: { billId: id } });
+  }
 }

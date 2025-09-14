@@ -4,8 +4,8 @@ export class ResponseParticipantDto {
   id: number;
   billId: number;
   name: string;
-  declaredPercent?: number;
-  declaredAmount?: number;
+  customPercent?: number;
+  customAmount?: number;
   totalAmount?: number;
   effectivePercent?: number;
 
@@ -13,16 +13,16 @@ export class ResponseParticipantDto {
     id: number,
     billId: number,
     name: string,
-    declaredPercent?: number,
-    declaredAmount?: number,
+    customPercent?: number,
+    customAmount?: number,
     totalAmount?: number,
     effectivePercent?: number,
   ) {
     this.id = id;
     this.billId = billId;
     this.name = name;
-    this.declaredPercent = declaredPercent;
-    this.declaredAmount = declaredAmount;
+    this.customPercent = customPercent;
+    this.customAmount = customAmount;
     this.totalAmount = totalAmount;
     this.effectivePercent = effectivePercent;
   }

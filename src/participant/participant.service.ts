@@ -5,6 +5,7 @@ import { ParticipantRepository } from './participant.repository';
 import { InvalidParticipantCreateDataException } from './exceptions/InvalidParticipantCreateDataException';
 import { ResponseParticipantDto } from './dto/response-participant.dto';
 import { BillsService } from '../bills/bills.service';
+import { Participant } from './entities/participant.entity';
 
 @Injectable()
 export class ParticipantService {
@@ -42,6 +43,18 @@ export class ParticipantService {
     return this.participantRepository.create(data);
   }
 
+  // TODO: Optimize this method to reduce the number of database calls
+  async createMany(createParticipantDtos: CreateParticipantDto[]) {
+    const participants: Participant[] = [];
+
+    for (const dto of createParticipantDtos) {
+      const participant = await this.create(dto);
+      participants.push(participant);
+    }
+
+    return participants;
+  }
+
   findAll() {
     return `This action returns all participant`;
   }
@@ -57,6 +70,6 @@ export class ParticipantService {
   }
 
   remove(id: number) {
-    return `This action removes a #${id} participant`;
+    return this.participantRepository.deleteAllParticipantsByBillId(id);
   }
 }

@@ -16,8 +16,8 @@ export class ParticipantController {
   constructor(private readonly participantService: ParticipantService) {}
 
   @Post()
-  create(@Body() createParticipantDto: CreateParticipantDto) {
-    return this.participantService.create(createParticipantDto);
+  create(@Body() createParticipantDtos: CreateParticipantDto[]) {
+    return this.participantService.createMany(createParticipantDtos);
   }
 
   @Get()
@@ -38,7 +38,7 @@ export class ParticipantController {
     return this.participantService.update(+id, updateParticipantDto);
   }
 
-  @Delete(':id')
+  @Delete('/bill/:id')
   remove(@Param('id') id: string) {
     return this.participantService.remove(+id);
   }
