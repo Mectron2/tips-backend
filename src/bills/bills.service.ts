@@ -31,6 +31,7 @@ export class BillsService {
 
   async findOne(id: number) {
     const bill = await this.billsRepository.findOne(id);
+
     const { participants, amount, tipPercent } = bill;
 
     const totalTipsAmount = Number(amount) * Number(tipPercent);
