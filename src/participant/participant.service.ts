@@ -14,25 +14,11 @@ export class ParticipantService {
     private readonly billsService: BillsService,
   ) {}
 
-  async create(createParticipantDto: CreateParticipantDto) {
+  async create(createParticipantDto: CreateParticipantDto, billId: number) {
     const data = {
       ...createParticipantDto,
       name: createParticipantDto.name ?? 'Unknown participant',
     };
-
-    const remainingAmountOfTips =
-      await this.billsService.getRemainingAmountOfTips(data.billId);
-    const remainingPercentOfTips =
-      await this.billsService.getRemainingPercentOfTips(data.billId);
-
-    if (
-      (data.customAmount && data.customAmount > remainingAmountOfTips) ||
-      (data.customPercent && data.customPercent > remainingPercentOfTips)
-    ) {
-      throw new InvalidParticipantCreateDataException(
-        'customAmount or customPercent exceeds the remaining amount or percent of tips for the bill.',
-      );
-    }
 
     if (data.customAmount && data.customPercent) {
       throw new InvalidParticipantCreateDataException(
@@ -40,15 +26,47 @@ export class ParticipantService {
       );
     }
 
-    return this.participantRepository.create(data);
+    return this.participantRepository.create(data, billId);
   }
 
   // TODO: Optimize this method to reduce the number of database calls
-  async createMany(createParticipantDtos: CreateParticipantDto[]) {
+  async createMany(
+    billId: number,
+    createParticipantDtos: CreateParticipantDto[],
+  ) {
     const participants: Participant[] = [];
 
+    const remainingAmountOfTips =
+      await this.billsService.getRemainingAmountOfTips(billId);
+    const remainingPercentOfTips =
+      await this.billsService.getRemainingPercentOfTips(billId);
+
+    let totalCustomAmount = 0;
+    let totalCustomPercent = 0;
+
     for (const dto of createParticipantDtos) {
-      const participant = await this.create(dto);
+      if (dto.customAmount) {
+        totalCustomAmount += dto.customAmount;
+      }
+      if (dto.customPercent) {
+        totalCustomPercent += dto.customPercent;
+      }
+    }
+
+    if (totalCustomAmount > remainingAmountOfTips) {
+      throw new InvalidParticipantCreateDataException(
+        'Total customAmount exceeds the remaining amount of tips for the bill.',
+      );
+    }
+
+    if (totalCustomPercent > remainingPercentOfTips) {
+      throw new InvalidParticipantCreateDataException(
+        'Total customPercent exceeds the remaining percent of tips for the bill.',
+      );
+    }
+
+    for (const dto of createParticipantDtos) {
+      const participant = await this.create(dto, billId);
       participants.push(participant);
     }
 

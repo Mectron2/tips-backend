@@ -7,7 +7,8 @@ import { Injectable } from '@nestjs/common';
 export class ParticipantRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(data: CreateParticipantDto): Promise<Participant> {
+  create(dto: CreateParticipantDto, billId: number): Promise<Participant> {
+    const data = { ...dto, billId };
     return this.prisma.participant.create({ data });
   }
 

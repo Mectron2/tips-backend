@@ -2,13 +2,6 @@ import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateParticipantDto {
-  @IsNumber()
-  @ApiProperty({
-    description: 'The ID of the bill this participant is associated with',
-    example: 1,
-  })
-  billId: number;
-
   @IsString()
   @IsOptional()
   @ApiProperty({

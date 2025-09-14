@@ -8,16 +8,19 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ParticipantService } from './participant.service';
-import { CreateParticipantDto } from './dto/create-participant.dto';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
+import { CreateParticipantsRequestDto } from './create-participants-request.dto';
 
 @Controller('participant')
 export class ParticipantController {
   constructor(private readonly participantService: ParticipantService) {}
 
   @Post()
-  create(@Body() createParticipantDtos: CreateParticipantDto[]) {
-    return this.participantService.createMany(createParticipantDtos);
+  create(@Body() createParticipantRequest: CreateParticipantsRequestDto) {
+    return this.participantService.createMany(
+      createParticipantRequest.billId,
+      createParticipantRequest.createParticipantDtos,
+    );
   }
 
   @Get()
