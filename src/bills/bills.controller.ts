@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch } from '@nestjs/common';
 import { BillsService } from './bills.service';
 import { CreateBillDto } from './dto/create-bill.dto';
 
@@ -24,5 +24,10 @@ export class BillsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.billsService.remove(+id);
+  }
+
+  @Patch(':id')
+  patch(@Param('id') id: string, @Body() updateBillDto: Partial<CreateBillDto>) {
+    return this.billsService.patch(+id, updateBillDto);
   }
 }

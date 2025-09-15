@@ -144,7 +144,7 @@ export class BillsService {
     return [...customPercentsOrAmountsDtos, ...remainingDtos];
   }
 
-  async getRemainingAmountOfTips(billId: number) {
+  public async getRemainingAmountOfTips(billId: number) {
     const bill = await this.billsRepository.findOne(billId);
     const tipsLimit = Number(bill.amount) * Number(bill.tipPercent);
     const paidTips = bill.participants
@@ -155,7 +155,7 @@ export class BillsService {
     return tipsLimit - paidTips;
   }
 
-  async getRemainingPercentOfTips(billId: number) {
+  public async getRemainingPercentOfTips(billId: number) {
     const tipsLimit = 1;
     const bill = await this.billsRepository.findOne(billId);
     const paidTips = bill.participants
@@ -166,7 +166,11 @@ export class BillsService {
     return tipsLimit - paidTips;
   }
 
-  remove(id: number) {
+  public remove(id: number) {
     return this.billsRepository.delete(id);
+  }
+
+  public patch(id: number, data: Partial<CreateBillDto>) {
+    return this.billsRepository.patch(id, data);
   }
 }

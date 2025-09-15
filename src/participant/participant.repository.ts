@@ -12,7 +12,7 @@ export class ParticipantRepository {
     return this.prisma.participant.create({ data });
   }
 
-  findOne(id: number) {
+  findOne(id: number): Promise<Participant> {
     return this.prisma.participant.findUniqueOrThrow({ where: { id } });
   }
 

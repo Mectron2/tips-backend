@@ -32,4 +32,8 @@ export class BillsRepository {
   delete(id: number) {
     return this.prisma.bill.delete({ where: { id } });
   }
+
+  patch(id: number, data: Partial<CreateBillDto>) {
+    return this.prisma.bill.update({ where: { id }, data });
+  }
 }
