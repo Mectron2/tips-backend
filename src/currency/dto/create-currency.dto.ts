@@ -11,6 +11,6 @@ export class CreateCurrencyDto {
   symbol: string;
 
   @IsNumber()
-  @ApiProperty({ description: 'The exchange rate of the currency to UAH', example: 41.19 })
+  @ApiProperty({ description: 'The exchange rate of the currency to USD', example: 1 })
   exchangeRate: number;
 }
