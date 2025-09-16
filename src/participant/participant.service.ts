@@ -5,17 +5,22 @@ import { InvalidParticipantCreateDataException } from './exceptions/InvalidParti
 import { ResponseParticipantDto } from './dto/response-participant.dto';
 import { BillsService } from '../bills/bills.service';
 import { Participant } from './entities/participant.entity';
+import { CurrencyService } from '../currency/currency.service';
 
 @Injectable()
 export class ParticipantService {
   constructor(
     private readonly participantRepository: ParticipantRepository,
     private readonly billsService: BillsService,
+    private readonly currencyService: CurrencyService,
   ) {}
 
   async create(createParticipantDto: CreateParticipantDto, billId: number) {
+    const userCurrency = await this.currencyService.findOne(createParticipantDto.currencyId);
+
     const data = {
       ...createParticipantDto,
+      customAmount: createParticipantDto.customAmount && (createParticipantDto.customAmount / Number(userCurrency.exchangeRate)),
       name: createParticipantDto.name ?? 'Unknown participant',
     };
 
@@ -40,12 +45,22 @@ export class ParticipantService {
     const remainingPercentOfTips =
       await this.billsService.getRemainingPercentOfTips(billId);
 
+    const currencies = await this.currencyService.findAll();
+
+    const currenciesMap = currencies.reduce<Record<number, typeof currencies[number]>>(
+      (acc, currency) => {
+        acc[currency.id] = currency;
+        return acc;
+      },
+      {}
+    );
+
     let totalCustomAmount = 0;
     let totalCustomPercent = 0;
 
     for (const dto of createParticipantDtos) {
       if (dto.customAmount) {
-        totalCustomAmount += dto.customAmount;
+        totalCustomAmount += dto.customAmount / Number(currenciesMap[dto.currencyId].exchangeRate);
       }
       if (dto.customPercent) {
         totalCustomPercent += dto.customPercent;

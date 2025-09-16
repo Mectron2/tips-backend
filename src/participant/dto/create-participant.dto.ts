@@ -30,4 +30,11 @@ export class CreateParticipantDto {
     required: false,
   })
   customAmount?: number;
+
+  @IsNumber()
+  @ApiProperty({
+    description: 'The ID of currency used for the participant',
+    example: 1,
+  })
+  currencyId: number;
 }

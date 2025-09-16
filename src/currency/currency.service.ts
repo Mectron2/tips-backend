@@ -1,0 +1,21 @@
+import { Injectable } from '@nestjs/common';
+import { CreateCurrencyDto } from './dto/create-currency.dto';
+import { CurrencyRepository } from './currency.repository';
+import { Currency } from './entities/currency.entity';
+
+@Injectable()
+export class CurrencyService {
+  constructor(private readonly currencyRepository: CurrencyRepository) {}
+
+  create(createCurrencyDto: CreateCurrencyDto): Promise<Currency> {
+    return this.currencyRepository.create(createCurrencyDto);
+  }
+
+  findAll(): Promise<Currency[]> {
+    return this.currencyRepository.findAll();
+  }
+
+  findOne(id: number): Promise<Currency> {
+    return this.currencyRepository.findOne(id);
+  }
+}

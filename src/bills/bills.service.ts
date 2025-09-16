@@ -5,13 +5,20 @@ import { Bill } from './entities/bill.entity';
 import { ResponseParticipantDto } from '../participant/dto/response-participant.dto';
 import { Participant } from '../participant/entities/participant.entity';
 import { ResponseBillDto } from './dto/response-bill.dto';
+import { CurrencyService } from '../currency/currency.service';
 
 @Injectable()
 export class BillsService {
-  constructor(private readonly billsRepository: BillsRepository) {}
+  constructor(private readonly billsRepository: BillsRepository,
+              private readonly currencyService: CurrencyService) {}
 
-  create(createBillDto: CreateBillDto): Promise<Bill> {
-    return this.billsRepository.create(createBillDto);
+  async create(createBillDto: CreateBillDto): Promise<Bill> {
+    const billCurrency = await this.currencyService.findOne(createBillDto.currencyId);
+    const data = {
+      ...createBillDto,
+      amount: createBillDto.amount / Number(billCurrency.exchangeRate)
+    }
+    return this.billsRepository.create(data);
   }
 
   async findAll(): Promise<Bill[]> {
@@ -20,6 +27,7 @@ export class BillsService {
 
   async findOne(id: number) {
     const bill = await this.billsRepository.findOne(id);
+    const billCurrency = bill.currency;
 
     const { participants, amount, tipPercent } = bill;
 
@@ -27,14 +35,14 @@ export class BillsService {
     const totalBillAmount = Number(amount) + totalTipsAmount;
 
     if (!participants || participants.length === 0 || totalTipsAmount === 0) {
-      return ResponseBillDto.toDto(bill, totalBillAmount);
+      return ResponseBillDto.toDto(bill, billCurrency.exchangeRate, totalBillAmount);
     }
 
     const participantDtos = this.calculateParticipantShares(
       participants || [],
       totalTipsAmount,
     );
-    return ResponseBillDto.toDto(bill, totalBillAmount, participantDtos);
+    return ResponseBillDto.toDto(bill, billCurrency.exchangeRate, totalBillAmount, participantDtos);
   }
 
   private calculateParticipantShares(
@@ -112,7 +120,7 @@ export class BillsService {
       return ResponseParticipantDto.toDto(
         participant,
         remainingTipsAmount * customPercent,
-        (remainingTipsAmount * customPercent) / totalTipsAmount,
+        (remainingTipsAmount * customPercent) / totalTipsAmount
       );
     });
 

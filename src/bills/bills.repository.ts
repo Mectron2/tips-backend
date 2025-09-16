@@ -9,17 +9,23 @@ export class BillsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   create(data: CreateBillDto): Promise<Bill> {
-    return this.prisma.bill.create({ data });
+    return this.prisma.bill.create({
+      data,
+      include: { currency: true },
+    });
   }
 
+
   findAll(): Promise<Bill[]> {
-    return this.prisma.bill.findMany({ include: { participants: true } });
+    return this.prisma.bill.findMany({ include: { participants: true, currency: true } });
   }
 
   async findOne(id: number): Promise<Bill> {
     const bill = await this.prisma.bill.findUnique({
       where: { id },
-      include: { participants: true },
+      include: { participants: {
+        include: { currency: true },
+        }, currency: true },
     });
 
     if (!bill) {

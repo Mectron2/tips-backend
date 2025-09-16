@@ -18,18 +18,34 @@ model Bill {
   id         Int      @id @default(autoincrement())
   amount     Decimal  @db.Decimal(12, 2)
   tipPercent Decimal? @db.Decimal(5, 2)
+  currencyId Int
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
   participants Participant[]
+  currency     Currency    @relation(fields: [currencyId], references: [id], onDelete: Restrict)
 }
 
 model Participant {
   id            Int      @id @default(autoincrement())
   billId        Int
+  currencyId    Int
   name          String?
   customPercent Decimal? @db.Decimal(5, 2)
   customAmount  Decimal? @db.Decimal(12, 2)
 
   bill Bill @relation(fields: [billId], references: [id], onDelete: Cascade)
+  currency Currency @relation(fields: [currencyId], references: [id], onDelete: Restrict)
+}
+
+model Currency {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique
+  symbol       String
+  exchangeRate Decimal  @db.Decimal(12, 6)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  participants Participant[]
+  bills        Bill[]
 }
