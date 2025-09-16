@@ -27,7 +27,6 @@ export class BillsService {
 
   async findOne(id: number) {
     const bill = await this.billsRepository.findOne(id);
-    const billCurrency = bill.currency;
 
     const { participants, amount, tipPercent } = bill;
 
@@ -35,14 +34,14 @@ export class BillsService {
     const totalBillAmount = Number(amount) + totalTipsAmount;
 
     if (!participants || participants.length === 0 || totalTipsAmount === 0) {
-      return ResponseBillDto.toDto(bill, billCurrency.exchangeRate, totalBillAmount);
+      return ResponseBillDto.toDto(bill, totalBillAmount);
     }
 
     const participantDtos = this.calculateParticipantShares(
       participants || [],
       totalTipsAmount,
     );
-    return ResponseBillDto.toDto(bill, billCurrency.exchangeRate, totalBillAmount, participantDtos);
+    return ResponseBillDto.toDto(bill, totalBillAmount, participantDtos);
   }
 
   private calculateParticipantShares(
