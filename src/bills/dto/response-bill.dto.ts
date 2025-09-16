@@ -53,7 +53,9 @@ export class ResponseBillDto {
       data.updatedAt.toISOString(),
       participants ? participants : undefined,
       totalAmount ? totalAmount : undefined,
-      totalAmount && data.currency ? (Number(data.currency.exchangeRate) * totalAmount) : undefined,
+      totalAmount && data.currency
+        ? Number(data.currency.exchangeRate) * totalAmount
+        : undefined,
     );
   }
 }

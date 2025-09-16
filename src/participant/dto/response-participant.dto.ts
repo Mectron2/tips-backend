@@ -47,7 +47,9 @@ export class ResponseParticipantDto {
       data.customPercent ? Number(data.customPercent) : undefined,
       data.customAmount ? Number(data.customAmount) : undefined,
       totalAmount ? totalAmount : undefined,
-      data.currency && totalAmount ? (Number(data.currency.exchangeRate) * totalAmount) : undefined,
+      data.currency && totalAmount
+        ? Number(data.currency.exchangeRate) * totalAmount
+        : undefined,
       effectivePercent ? effectivePercent : undefined,
     );
   }

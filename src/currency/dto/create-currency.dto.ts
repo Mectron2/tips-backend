@@ -3,7 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCurrencyDto {
   @IsString()
-  @ApiProperty({ description: 'The name of the currency', example: 'US Dollar' })
+  @ApiProperty({
+    description: 'The name of the currency',
+    example: 'US Dollar',
+  })
   name: string;
 
   @IsString()
@@ -11,6 +14,9 @@ export class CreateCurrencyDto {
   symbol: string;
 
   @IsNumber()
-  @ApiProperty({ description: 'The exchange rate of the currency to USD', example: 1 })
+  @ApiProperty({
+    description: 'The exchange rate of the currency to USD',
+    example: 1,
+  })
   exchangeRate: number;
 }

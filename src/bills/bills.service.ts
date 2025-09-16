@@ -9,15 +9,19 @@ import { CurrencyService } from '../currency/currency.service';
 
 @Injectable()
 export class BillsService {
-  constructor(private readonly billsRepository: BillsRepository,
-              private readonly currencyService: CurrencyService) {}
+  constructor(
+    private readonly billsRepository: BillsRepository,
+    private readonly currencyService: CurrencyService,
+  ) {}
 
   async create(createBillDto: CreateBillDto): Promise<Bill> {
-    const billCurrency = await this.currencyService.findOne(createBillDto.currencyId);
+    const billCurrency = await this.currencyService.findOne(
+      createBillDto.currencyId,
+    );
     const data = {
       ...createBillDto,
-      amount: createBillDto.amount / Number(billCurrency.exchangeRate)
-    }
+      amount: createBillDto.amount / Number(billCurrency.exchangeRate),
+    };
     return this.billsRepository.create(data);
   }
 
@@ -119,7 +123,7 @@ export class BillsService {
       return ResponseParticipantDto.toDto(
         participant,
         remainingTipsAmount * customPercent,
-        (remainingTipsAmount * customPercent) / totalTipsAmount
+        (remainingTipsAmount * customPercent) / totalTipsAmount,
       );
     });
 

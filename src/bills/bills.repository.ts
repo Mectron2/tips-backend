@@ -15,17 +15,21 @@ export class BillsRepository {
     });
   }
 
-
   findAll(): Promise<Bill[]> {
-    return this.prisma.bill.findMany({ include: { participants: true, currency: true } });
+    return this.prisma.bill.findMany({
+      include: { participants: true, currency: true },
+    });
   }
 
   async findOne(id: number): Promise<Bill> {
     const bill = await this.prisma.bill.findUnique({
       where: { id },
-      include: { participants: {
-        include: { currency: true },
-        }, currency: true },
+      include: {
+        participants: {
+          include: { currency: true },
+        },
+        currency: true,
+      },
     });
 
     if (!bill) {

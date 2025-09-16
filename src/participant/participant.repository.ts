@@ -13,7 +13,10 @@ export class ParticipantRepository {
   }
 
   findOne(id: number): Promise<Participant> {
-    return this.prisma.participant.findUniqueOrThrow({ where: { id }, include: { currency: true } });
+    return this.prisma.participant.findUniqueOrThrow({
+      where: { id },
+      include: { currency: true },
+    });
   }
 
   deleteAllParticipantsByBillId(id: number) {
