@@ -18,4 +18,8 @@ export class CurrencyRepository {
   findOne(id: number) {
     return this.prisma.currency.findUniqueOrThrow({ where: { id } });
   }
+
+  findByCode(symbol: string) {
+    return this.prisma.currency.findUnique({ where: { symbol } });
+  }
 }

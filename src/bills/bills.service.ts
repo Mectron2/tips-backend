@@ -181,7 +181,15 @@ export class BillsService {
     return this.billsRepository.delete(id);
   }
 
-  public patch(id: number, data: Partial<CreateBillDto>) {
+  public async patch(id: number, data: Partial<CreateBillDto>) {
+    if (data.amount) {
+      const billCurrency = data.currencyId
+        ? await this.currencyService.findOne(data.currencyId)
+        : await this.currencyService.findByCode('USD');
+
+      data.amount = data.amount / Number(billCurrency.exchangeRate);
+    }
+
     return this.billsRepository.patch(id, data);
   }
 }
