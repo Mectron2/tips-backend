@@ -1,6 +1,7 @@
 import { Bill } from '../entities/bill.entity';
 import { ResponseParticipantDto } from '../../participant/dto/response-participant.dto';
 import { Currency } from '../../currency/entities/currency.entity';
+import { Dish } from '../../dishes/entities/dish.entity';
 
 export class ResponseBillDto {
   id: number;
@@ -12,6 +13,7 @@ export class ResponseBillDto {
   updatedAt: string;
   totalAmount?: number;
   totalAmountInSpecifiedCurrency?: number;
+  dish?: Dish;
   participants?: ResponseParticipantDto[];
 
   constructor(
@@ -24,6 +26,7 @@ export class ResponseBillDto {
     updatedAt: string,
     participants?: ResponseParticipantDto[],
     totalAmount?: number,
+    dish?: Dish,
     totalAmountInSpecifiedCurrency?: number,
   ) {
     this.id = id;
@@ -35,6 +38,7 @@ export class ResponseBillDto {
     this.updatedAt = updatedAt;
     this.participants = participants;
     this.totalAmount = totalAmount;
+    this.dish = dish;
     this.totalAmountInSpecifiedCurrency = totalAmountInSpecifiedCurrency;
   }
 
@@ -53,6 +57,7 @@ export class ResponseBillDto {
       data.updatedAt.toISOString(),
       participants ? participants : undefined,
       totalAmount ? totalAmount : undefined,
+      data.dish ? data.dish : undefined,
       totalAmount && data.currency
         ? Number(data.currency.exchangeRate) * totalAmount
         : undefined,

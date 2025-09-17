@@ -6,21 +6,33 @@ import { ResponseParticipantDto } from '../participant/dto/response-participant.
 import { Participant } from '../participant/entities/participant.entity';
 import { ResponseBillDto } from './dto/response-bill.dto';
 import { CurrencyService } from '../currency/currency.service';
+import { InvalidBillCreateDataException } from './exceptions/InvalidBillCreateDataException';
+import { DishesService } from '../dishes/dishes.service';
 
 @Injectable()
 export class BillsService {
   constructor(
     private readonly billsRepository: BillsRepository,
     private readonly currencyService: CurrencyService,
+    private readonly dishesService: DishesService,
   ) {}
-
   async create(createBillDto: CreateBillDto): Promise<Bill> {
+    if (createBillDto.amount && createBillDto.dishId) {
+      throw new InvalidBillCreateDataException("Bill can't have both amount and dishId");
+    }
+
+    if (!createBillDto.amount && !createBillDto.dishId) {
+      throw new InvalidBillCreateDataException("Bill must have either amount or dishId");
+    }
+
+    const dish = createBillDto.dishId ? await this.dishesService.findOne(createBillDto.dishId) : null;
+
     const billCurrency = await this.currencyService.findOne(
       createBillDto.currencyId,
     );
     const data = {
       ...createBillDto,
-      amount: createBillDto.amount / Number(billCurrency.exchangeRate),
+      amount: dish ? Number(dish.price) : createBillDto.amount / Number(billCurrency.exchangeRate),
     };
     return this.billsRepository.create(data);
   }

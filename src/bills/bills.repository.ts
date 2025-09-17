@@ -29,6 +29,7 @@ export class BillsRepository {
           include: { currency: true },
         },
         currency: true,
+        dish: true,
       },
     });
 

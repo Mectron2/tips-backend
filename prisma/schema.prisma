@@ -19,11 +19,13 @@ model Bill {
   amount     Decimal  @db.Decimal(12, 6)
   tipPercent Decimal? @db.Decimal(5, 2)
   currencyId Int
+  dishId     Int?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
   participants Participant[]
   currency     Currency      @relation(fields: [currencyId], references: [id], onDelete: Restrict)
+  dish         Dish?         @relation(fields: [dishId], references: [id], onDelete: SetNull)
 }
 
 model Participant {
@@ -48,4 +50,13 @@ model Currency {
 
   participants Participant[]
   bills        Bill[]
+}
+
+model Dish {
+  id          Int      @id @default(autoincrement())
+  name        String
+  price       Decimal  @db.Decimal(12, 6)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  bills       Bill[]
 }
