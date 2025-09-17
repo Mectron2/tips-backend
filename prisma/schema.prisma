@@ -16,7 +16,7 @@ datasource db {
 
 model Bill {
   id         Int      @id @default(autoincrement())
-  amount     Decimal  @db.Decimal(12, 2)
+  amount     Decimal  @db.Decimal(12, 6)
   tipPercent Decimal? @db.Decimal(5, 2)
   currencyId Int
   createdAt  DateTime @default(now())
@@ -32,7 +32,7 @@ model Participant {
   currencyId    Int
   name          String?
   customPercent Decimal? @db.Decimal(5, 2)
-  customAmount  Decimal? @db.Decimal(12, 2)
+  customAmount  Decimal? @db.Decimal(12, 6)
 
   bill     Bill     @relation(fields: [billId], references: [id], onDelete: Cascade)
   currency Currency @relation(fields: [currencyId], references: [id], onDelete: Restrict)
